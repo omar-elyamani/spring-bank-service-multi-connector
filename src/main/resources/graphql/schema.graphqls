@@ -17,12 +17,13 @@ type CustomerDto {
     identityRef : String,
     firstname:String,
     lastname:String,
+    bankAccounts:[BankAccountDto]
 }
 
 type BankAccountDto {
     rib:String,
     amount:Float,
-    createdAt:Float,
+    createdAt:String,
     accountStatus:AccountStatus,
     customer:CustomerDto,
 }
@@ -73,7 +74,7 @@ type AddBankAccountResponse {
     message:String,
     rib:String,
     amount:Float,
-    createdAt:Float,
+    createdAt:String,
     accountStatus:AccountStatus,
     customer:CustomerDto
 }
