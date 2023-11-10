@@ -16,8 +16,7 @@ type CustomerDto {
     username : String,
     identityRef : String,
     firstname:String,
-    lastname:String,
-    bankAccounts:[BankAccountDto]
+    lastname:String
 }
 
 type BankAccountDto {
