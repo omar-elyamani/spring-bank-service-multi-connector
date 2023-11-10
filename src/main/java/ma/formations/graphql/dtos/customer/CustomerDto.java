@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ma.formations.graphql.dtos.bankaccount.BankAccountDto;
 
 import java.util.List;
 
@@ -17,5 +16,4 @@ public class CustomerDto {
     private String identityRef;
     private String firstname;
     private String lastname;
-    private List<BankAccountDto> bankAccounts;
 }
