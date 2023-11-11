@@ -17,8 +17,7 @@ public class BankAccountDto {
     private Long id;
     private String rib;
     private Double amount;
-    private Long createdAt;
-    @Enumerated(EnumType.STRING)
+    private String createdAt;
     private AccountStatus accountStatus;
     private CustomerDto customer;
 }
