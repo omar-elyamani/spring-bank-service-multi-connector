@@ -12,6 +12,7 @@ import java.util.List;
 @Builder
 @Data
 public class CustomerDto {
+    private Long id;
     private String username;
     private String identityRef;
     private String firstname;
