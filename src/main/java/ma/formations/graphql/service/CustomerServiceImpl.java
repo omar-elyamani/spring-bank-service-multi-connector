@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -55,5 +56,20 @@ public class CustomerServiceImpl implements ICustomerService {
     public CustomerDto getCustomByIdentity(String identity) {
         return customerConverter.customerToCustomerDTO(customerRepository.findByIdentityRef(identity).orElseThrow(
                 () -> new BusinessException(String.format("No Customer with identity [%s] exist ", identity))));
+    }
+
+    @Override
+    public AddCustomerResponse updateCustomer(Long id, AddCustomerRequest addCustomerRequest) {
+        Customer bo = customerConverter.addCustomerRequestToCustomer(addCustomerRequest);
+        bo.setId(id);
+        return customerConverter.customerToAddCustomerResponse(customerRepository.save(bo));
+    }
+
+    @Override
+    public void deleteCustomer(Long id) {
+        Optional<Customer> optionalCustomer = customerRepository.findById(id);
+        if (!optionalCustomer.isPresent())
+            throw new BusinessException(String.format("No Customer with id=%s exist", id));
+        customerRepository.deleteById(id);
     }
 }

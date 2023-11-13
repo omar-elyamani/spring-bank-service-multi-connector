@@ -14,5 +14,9 @@ public interface ICustomerService {
 
     CustomerDto getCustomByIdentity(String identity);
 
+    AddCustomerResponse updateCustomer(Long id, AddCustomerRequest addCustomerRequest);
+
+    void deleteCustomer(Long id);
+
 
 }
