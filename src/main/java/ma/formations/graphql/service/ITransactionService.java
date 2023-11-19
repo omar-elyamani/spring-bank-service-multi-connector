@@ -7,9 +7,7 @@ import ma.formations.graphql.dtos.transaction.TransactionDto;
 
 import java.util.Date;
 import java.util.List;
-
 public interface ITransactionService {
     AddWirerTransferResponse wiredTransfer(AddWirerTransferRequest dto);
-
     List<TransactionDto> getTransactions(GetTransactionListRequest dto);
 }

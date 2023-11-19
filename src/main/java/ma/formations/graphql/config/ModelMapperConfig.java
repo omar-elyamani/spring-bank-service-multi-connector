@@ -26,22 +26,19 @@ public class ModelMapperConfig {
                 setFieldMatchingEnabled(true).
                 setSkipNullEnabled(true).
                 setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
-
-
         Converter<Date, String> dateToStringConverter = new AbstractConverter<>() {
             @Override
             public String convert(Date date) {
                 return tools.dateToString(date);
             }
         };
-
         Converter<String, Date> stringToDateConverter = new AbstractConverter<>() {
             @Override
             public Date convert(String s) {
                 try {
                     return tools.stringToDate(s);
                 } catch (ParseException e) {
-                    throw new BusinessException(String.format("the date %s does not respect the format %s ", s, tools.getDateFormat()));
+                    throw new BusinessException(String.format("the date %s doesn't respect the format %s ", s, tools.getDateFormat()));
                 }
             }
         };

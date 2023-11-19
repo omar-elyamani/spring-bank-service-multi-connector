@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +26,6 @@ public class CustomerServiceImpl implements ICustomerService {
                 map(customer -> modelMapper.map(customer, CustomerDto.class)).
                 collect(Collectors.toList());
     }
-
 
     @Override
     public AddCustomerResponse createCustomer(AddCustomerRequest addCustomerRequest) {
@@ -61,7 +59,9 @@ public class CustomerServiceImpl implements ICustomerService {
         );
         customerToPersist.setId(customerFound.getId());
         customerToPersist.setIdentityRef(identityRef);
-        return modelMapper.map(customerRepository.save(customerToPersist), UpdateCustomerResponse.class);
+        UpdateCustomerResponse updateCustomerResponse = modelMapper.map(customerRepository.save(customerToPersist), UpdateCustomerResponse.class);
+        updateCustomerResponse.setMessage(String.format("Customer identity %s is updated with success", identityRef));
+        return updateCustomerResponse;
     }
 
     @Override
