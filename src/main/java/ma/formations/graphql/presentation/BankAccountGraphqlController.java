@@ -1,5 +1,6 @@
 package ma.formations.graphql.presentation;
 
+import lombok.AllArgsConstructor;
 import ma.formations.graphql.dtos.bankaccount.AddBankAccountRequest;
 import ma.formations.graphql.dtos.bankaccount.AddBankAccountResponse;
 import ma.formations.graphql.dtos.bankaccount.BankAccountDto;
@@ -12,12 +13,9 @@ import org.springframework.stereotype.Controller;
 import java.util.List;
 
 @Controller
+@AllArgsConstructor
 public class BankAccountGraphqlController {
     private final IBankAccountService bankAccountService;
-
-    public BankAccountGraphqlController(IBankAccountService bankAccountService) {
-        this.bankAccountService = bankAccountService;
-    }
 
     @QueryMapping
     List<BankAccountDto> bankAccounts() {

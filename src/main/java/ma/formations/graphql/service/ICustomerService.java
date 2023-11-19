@@ -1,8 +1,6 @@
 package ma.formations.graphql.service;
 
-import ma.formations.graphql.dtos.customer.AddCustomerRequest;
-import ma.formations.graphql.dtos.customer.AddCustomerResponse;
-import ma.formations.graphql.dtos.customer.CustomerDto;
+import ma.formations.graphql.dtos.customer.*;
 
 import java.util.List;
 
@@ -12,11 +10,10 @@ public interface ICustomerService {
 
     AddCustomerResponse createCustomer(AddCustomerRequest addCustomerRequest);
 
+    UpdateCustomerResponse updateCustomer(String identityRef, UpdateCustomerRequest updateCustomerRequest);
+
     CustomerDto getCustomByIdentity(String identity);
 
-    AddCustomerResponse updateCustomer(Long id, AddCustomerRequest addCustomerRequest);
-
-    void deleteCustomer(Long id);
-
+    String deleteCustomerByIdentityRef(String identityRef);
 
 }

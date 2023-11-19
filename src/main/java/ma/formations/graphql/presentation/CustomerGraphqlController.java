@@ -1,8 +1,6 @@
 package ma.formations.graphql.presentation;
 
-import ma.formations.graphql.dtos.customer.AddCustomerRequest;
-import ma.formations.graphql.dtos.customer.AddCustomerResponse;
-import ma.formations.graphql.dtos.customer.CustomerDto;
+import ma.formations.graphql.dtos.customer.*;
 import ma.formations.graphql.service.ICustomerService;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
@@ -33,6 +31,16 @@ public class CustomerGraphqlController {
     @MutationMapping
     public AddCustomerResponse createCustomer(@Argument("dto") AddCustomerRequest dto) {
         return customerService.createCustomer(dto);
+    }
+
+    @MutationMapping
+    public UpdateCustomerResponse updateCustomer(@Argument("identityRef") String identityRef, @Argument("dto") UpdateCustomerRequest dto) {
+        return customerService.updateCustomer(identityRef, dto);
+    }
+
+    @MutationMapping
+    public String deleteCustomer(@Argument("identityRef") String identityRef) {
+        return customerService.deleteCustomerByIdentityRef(identityRef);
     }
 
 }

@@ -6,19 +6,22 @@ import ma.formations.graphql.dao.BankAccountTransactionRepository;
 import ma.formations.graphql.dao.UserRepository;
 import ma.formations.graphql.dtos.transaction.AddWirerTransferRequest;
 import ma.formations.graphql.dtos.transaction.AddWirerTransferResponse;
-import ma.formations.graphql.dtos.transaction.TransactionConverter;
+import ma.formations.graphql.dtos.transaction.GetTransactionListRequest;
 import ma.formations.graphql.dtos.transaction.TransactionDto;
 import ma.formations.graphql.enums.AccountStatus;
 import ma.formations.graphql.enums.TransactionType;
 import ma.formations.graphql.service.exception.BusinessException;
 import ma.formations.graphql.service.model.BankAccount;
 import ma.formations.graphql.service.model.BankAccountTransaction;
+import ma.formations.graphql.service.model.GetTransactionListBo;
 import ma.formations.graphql.service.model.User;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -30,14 +33,26 @@ public class TransactionServiceImpl implements ITransactionService {
 
     private final UserRepository userRepository;
 
-    private TransactionConverter transactionConverter;
+    private ModelMapper modelMapper;
 
 
     @Override
     public AddWirerTransferResponse wiredTransfer(AddWirerTransferRequest dto) {
 
-        BankAccountTransaction transactionFrom = transactionConverter.toTransactionFrom(dto);
-        BankAccountTransaction transactionTo = transactionConverter.toTransactionTo(dto);
+        BankAccountTransaction transactionFrom = BankAccountTransaction.builder().
+                amount(dto.getAmount()).
+                transactionType(TransactionType.DEBIT).
+                bankAccount(BankAccount.builder().rib(dto.getRibFrom()).build()).
+                user(new User(dto.getUsername())).
+                build();
+
+        BankAccountTransaction transactionTo = BankAccountTransaction.builder().
+                amount(dto.getAmount()).
+                transactionType(TransactionType.CREDIT).
+                bankAccount(BankAccount.builder().rib(dto.getRibTo()).build()).
+                user(new User(dto.getUsername())).
+                build();
+
         String username = transactionFrom.getUser().getUsername();
         String ribFrom = transactionFrom.getBankAccount().getRib();
         String ribTo = transactionTo.getBankAccount().getRib();
@@ -57,18 +72,22 @@ public class TransactionServiceImpl implements ITransactionService {
         bankAccountFrom.setAmount(bankAccountFrom.getAmount() - amount);
         //On crédite le compte destinataire
         bankAccountTo.setAmount(bankAccountTo.getAmount() + amount);
-        Date now = new Date();
-        transactionFrom.setTransactionType(TransactionType.DEBIT);
-        transactionFrom.setCreatedAt(now);
+
+        transactionFrom.setCreatedAt(new Date());
         transactionFrom.setUser(user);
         transactionFrom.setBankAccount(bankAccountFrom);
-        transactionTo.setTransactionType(TransactionType.CREDIT);
-        transactionTo.setCreatedAt(now);
+
+        transactionTo.setCreatedAt(new Date());
         transactionTo.setUser(user);
         transactionTo.setBankAccount(bankAccountTo);
         bankAccountTransactionRepository.save(transactionFrom);
         bankAccountTransactionRepository.save(transactionTo);
-        return transactionConverter.toAddWirerTransferResponse(transactionFrom, transactionTo);
+        return AddWirerTransferResponse.builder().
+                message(String.format("the transfer of an amount of %s from the %s bank account to %s was carried out successfully",
+                        dto.getAmount(), dto.getRibFrom(), dto.getRibTo())).
+                transactionFrom(modelMapper.map(transactionFrom, TransactionDto.class)).
+                transactionTo(modelMapper.map(transactionTo, TransactionDto.class)).
+                build();
     }
 
     private void checkBusinessRules(BankAccount bankAccountFrom, BankAccount bankAccountTo, Double amount) {
@@ -91,7 +110,10 @@ public class TransactionServiceImpl implements ITransactionService {
 
 
     @Override
-    public List<TransactionDto> getTransactions(String rib, Date dateFrom, Date dateTo) {
-        return transactionConverter.transactionDtos(bankAccountTransactionRepository.findByBankAccount_RibAndCreatedAtBetween(rib, dateFrom, dateTo));
+    public List<TransactionDto> getTransactions(GetTransactionListRequest requestDTO) {
+        GetTransactionListBo data = modelMapper.map(requestDTO, GetTransactionListBo.class);
+        return bankAccountTransactionRepository.findByBankAccount_RibAndCreatedAtBetween(
+                        data.getRib(), data.getDateFrom(), data.getDateTo()).
+                stream().map(bo -> modelMapper.map(bo, TransactionDto.class)).collect(Collectors.toList());
     }
 }

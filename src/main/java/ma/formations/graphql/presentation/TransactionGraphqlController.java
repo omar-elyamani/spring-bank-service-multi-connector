@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import ma.formations.graphql.common.CommonTools;
 import ma.formations.graphql.dtos.transaction.AddWirerTransferRequest;
 import ma.formations.graphql.dtos.transaction.AddWirerTransferResponse;
+import ma.formations.graphql.dtos.transaction.GetTransactionListRequest;
 import ma.formations.graphql.dtos.transaction.TransactionDto;
 import ma.formations.graphql.service.ITransactionService;
 import ma.formations.graphql.service.exception.BusinessException;
@@ -29,20 +30,7 @@ public class TransactionGraphqlController {
     }
 
     @QueryMapping
-    public List<TransactionDto> getTransactions(@Argument String rib, @Argument String dateFrom, @Argument String dateTo) {
-        Date from = null;
-        Date to = null;
-        try {
-            from = commonTools.stringToDate(dateFrom);
-        } catch (Exception e) {
-            throw new BusinessException(String.format("the date %s does not respect the format %s ", dateFrom, commonTools.getDateFormat()));
-        }
-
-        try {
-            to = commonTools.stringToDate(dateTo);
-        } catch (Exception e) {
-            throw new BusinessException(String.format("the date %s does not respect the format %s ", dateTo, commonTools.getDateFormat()));
-        }
-        return transactionService.getTransactions(rib, from, to);
+    public List<TransactionDto> getTransactions(@Argument GetTransactionListRequest dto) {
+        return transactionService.getTransactions(dto);
     }
 }

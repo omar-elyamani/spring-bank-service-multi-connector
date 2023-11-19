@@ -2,17 +2,16 @@ package ma.formations.graphql.service;
 
 import lombok.AllArgsConstructor;
 import ma.formations.graphql.dao.CustomerRepository;
-import ma.formations.graphql.dtos.customer.AddCustomerRequest;
-import ma.formations.graphql.dtos.customer.AddCustomerResponse;
-import ma.formations.graphql.dtos.customer.CustomerConverter;
-import ma.formations.graphql.dtos.customer.CustomerDto;
+import ma.formations.graphql.dtos.customer.*;
 import ma.formations.graphql.service.exception.BusinessException;
 import ma.formations.graphql.service.model.Customer;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -20,17 +19,19 @@ import java.util.Optional;
 public class CustomerServiceImpl implements ICustomerService {
 
     private final CustomerRepository customerRepository;
-    private final CustomerConverter customerConverter;
+    private final ModelMapper modelMapper;
 
     @Override
     public List<CustomerDto> getAllCustomers() {
-        return customerConverter.customerDtos(customerRepository.findAll());
+        return customerRepository.findAll().stream().
+                map(customer -> modelMapper.map(customer, CustomerDto.class)).
+                collect(Collectors.toList());
     }
 
 
     @Override
     public AddCustomerResponse createCustomer(AddCustomerRequest addCustomerRequest) {
-        Customer bo = customerConverter.addCustomerRequestToCustomer(addCustomerRequest);
+        Customer bo = modelMapper.map(addCustomerRequest, Customer.class);
         String identityRef = bo.getIdentityRef();
         String username = bo.getUsername();
 
@@ -45,31 +46,40 @@ public class CustomerServiceImpl implements ICustomerService {
                     throw new BusinessException(String.format("The username [%s] is already used", username));
                 }
         );
-
-        AddCustomerResponse response = customerConverter.customerToAddCustomerResponse(customerRepository.save(bo));
+        AddCustomerResponse response = modelMapper.map(customerRepository.save(bo), AddCustomerResponse.class);
         response.setMessage(String.format("Customer : [identity= %s,First Name= %s, Last Name= %s, username= %s] was created with success",
                 response.getIdentityRef(), response.getFirstname(), response.getLastname(), response.getUsername()));
         return response;
     }
 
+
+    @Override
+    public UpdateCustomerResponse updateCustomer(String identityRef, UpdateCustomerRequest updateCustomerRequest) {
+        Customer customerToPersist = modelMapper.map(updateCustomerRequest, Customer.class);
+        Customer customerFound = customerRepository.findAll().stream().filter(bo -> bo.getIdentityRef().equals(identityRef)).findFirst().orElseThrow(
+                () -> new BusinessException(String.format("No Customer with identity [%s] exist !", identityRef))
+        );
+        customerToPersist.setId(customerFound.getId());
+        customerToPersist.setIdentityRef(identityRef);
+        return modelMapper.map(customerRepository.save(customerToPersist), UpdateCustomerResponse.class);
+    }
+
     @Override
     public CustomerDto getCustomByIdentity(String identity) {
-        return customerConverter.customerToCustomerDTO(customerRepository.findByIdentityRef(identity).orElseThrow(
-                () -> new BusinessException(String.format("No Customer with identity [%s] exist ", identity))));
+        return modelMapper.map(customerRepository.findByIdentityRef(identity).orElseThrow(
+                        () -> new BusinessException(String.format("No Customer with identity [%s] exist !", identity))),
+                CustomerDto.class);
     }
 
     @Override
-    public AddCustomerResponse updateCustomer(Long id, AddCustomerRequest addCustomerRequest) {
-        Customer bo = customerConverter.addCustomerRequestToCustomer(addCustomerRequest);
-        bo.setId(id);
-        return customerConverter.customerToAddCustomerResponse(customerRepository.save(bo));
-    }
+    public String deleteCustomerByIdentityRef(String identityRef) {
+        if (identityRef == null || identityRef.isEmpty())
+            throw new BusinessException("Enter a correct identity customer");
+        Customer customerFound = customerRepository.findAll().stream().filter(customer -> customer.getIdentityRef().equals(identityRef)).findFirst().orElseThrow(
+                () -> new BusinessException(String.format("No customer with identity %s exist in database", identityRef))
+        );
+        customerRepository.delete(customerFound);
+        return String.format("Customer with identity %s is deleted with success", identityRef);
 
-    @Override
-    public void deleteCustomer(Long id) {
-        Optional<Customer> optionalCustomer = customerRepository.findById(id);
-        if (!optionalCustomer.isPresent())
-            throw new BusinessException(String.format("No Customer with id=%s exist", id));
-        customerRepository.deleteById(id);
     }
 }

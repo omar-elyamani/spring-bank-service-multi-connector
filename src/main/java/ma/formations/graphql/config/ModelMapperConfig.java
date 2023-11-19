@@ -2,6 +2,7 @@ package ma.formations.graphql.config;
 
 import lombok.AllArgsConstructor;
 import ma.formations.graphql.common.CommonTools;
+import ma.formations.graphql.service.exception.BusinessException;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -20,7 +21,12 @@ public class ModelMapperConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+        modelMapper.getConfiguration().
+                setMatchingStrategy(MatchingStrategies.LOOSE).
+                setFieldMatchingEnabled(true).
+                setSkipNullEnabled(true).
+                setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
+
 
         Converter<Date, String> dateToStringConverter = new AbstractConverter<>() {
             @Override
@@ -35,13 +41,14 @@ public class ModelMapperConfig {
                 try {
                     return tools.stringToDate(s);
                 } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                    throw new BusinessException(String.format("the date %s does not respect the format %s ", s, tools.getDateFormat()));
                 }
             }
         };
-
         modelMapper.addConverter(dateToStringConverter);
         modelMapper.addConverter(stringToDateConverter);
+
         return modelMapper;
     }
 }
+

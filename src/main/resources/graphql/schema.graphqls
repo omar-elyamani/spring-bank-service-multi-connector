@@ -3,20 +3,22 @@ type Query{
     customerByIdentity(identity:String):CustomerDto
     bankAccounts : [BankAccountDto]
     bankAccountByRib (rib:String):BankAccountDto
-    getTransactions (rib:String,dateTo : String, dateFrom:String):[TransactionDto]
+    getTransactions (dto:GetTransactionListRequest):[TransactionDto]
 }
 
 type Mutation {
     createCustomer(dto:AddCustomerRequest):AddCustomerResponse
     addBankAccount(dto:AddBankAccountRequest):AddBankAccountResponse
     addWirerTransfer(dto:AddWirerTransferRequest):AddWiredTransferResponse
+    updateCustomer(identityRef:String,dto:UpdateCustomerRequest):UpdateCustomerResponse
+    deleteCustomer(identityRef:String):String
 }
 
 type CustomerDto {
     username : String,
     identityRef : String,
     firstname:String,
-    lastname:String
+    lastname:String,
 }
 
 type BankAccountDto {
@@ -55,6 +57,21 @@ input AddCustomerRequest {
     lastname:String
 }
 
+input UpdateCustomerRequest {
+    username : String,
+    firstname:String,
+    lastname:String
+}
+
+type UpdateCustomerResponse {
+    id:Int,
+    message:String,
+    username:String,
+    identityRef:String,
+    firstname:String,
+    lastname:String
+}
+
 type AddCustomerResponse {
     message:String,
     username:String,
@@ -89,4 +106,10 @@ type AddWiredTransferResponse {
     message:String,
     transactionFrom:TransactionDto,
     transactionTo:TransactionDto
+}
+
+input GetTransactionListRequest {
+    rib:String,
+    dateTo : String,
+    dateFrom:String
 }
