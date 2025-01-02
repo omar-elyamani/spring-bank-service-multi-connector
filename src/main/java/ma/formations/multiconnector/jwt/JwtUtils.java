@@ -8,7 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,25 +17,23 @@ import java.util.stream.Collectors;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${jwt.secret}")
+    @Value("${privite_key}")
     private String jwtSecret;
 
-    @Value("${jwt.expiration}")
-    private int jwtExpiration;
+    @Value("${expiration_delay}")
+    private int delaiExpiration;
 
     public String generateJwtToken(Authentication authentication) {
+
         UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userPrincipal.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList()));
-        claims.put("sub", userPrincipal.getUsername());
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
-                .compact();
+        Map<String, Object> credentials = new HashMap<>();
+        credentials.put("roles", userPrincipal.getAuthorities().stream().
+                map(GrantedAuthority::getAuthority).
+                collect(Collectors.toList()));
+        credentials.put("sub", userPrincipal.getUsername());
+        return Jwts.builder().setClaims(credentials).setIssuedAt(new Date())
+                .setExpiration(new Date((new Date()).getTime() + delaiExpiration))
+                .signWith(SignatureAlgorithm.HS512, jwtSecret).compact();
     }
 
     public String getUserNameFromJwtToken(String token) {
