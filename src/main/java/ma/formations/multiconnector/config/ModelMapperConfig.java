@@ -1,19 +1,13 @@
 package ma.formations.multiconnector.config;
-
 import lombok.AllArgsConstructor;
 import ma.formations.multiconnector.common.CommonTools;
-import ma.formations.multiconnector.dtos.bankaccount.AddBankAccountRequest;
-import ma.formations.multiconnector.grpc.stub.Bank;
 import ma.formations.multiconnector.service.exception.BusinessException;
-import ma.formations.multiconnector.service.model.BankAccount;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import java.text.ParseException;
 import java.util.Date;
 
