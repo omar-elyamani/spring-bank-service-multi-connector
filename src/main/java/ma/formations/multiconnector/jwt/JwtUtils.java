@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${privite_key}")
+    @Value("${private_key}")
     private String jwtSecret;
 
     @Value("${expiration_delay}")

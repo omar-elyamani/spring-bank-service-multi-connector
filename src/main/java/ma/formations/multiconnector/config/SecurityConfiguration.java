@@ -80,8 +80,4 @@ public class SecurityConfiguration {
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2/**"), new AntPathRequestMatcher("/static/**"), new AntPathRequestMatcher("/css/**"), new AntPathRequestMatcher("/js/**", "/images/**"));
     }
-
-    public PasswordEncoder getPasswordEncoder() {
-        return passwordEncoder;
-    }
 }
