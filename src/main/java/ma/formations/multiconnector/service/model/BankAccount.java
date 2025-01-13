@@ -29,6 +29,4 @@ public class BankAccount {
     private Customer customer;
     @OneToMany(mappedBy = "bankAccount")
     private List<BankAccountTransaction> bankAccountTransactionList;
-
-
 }

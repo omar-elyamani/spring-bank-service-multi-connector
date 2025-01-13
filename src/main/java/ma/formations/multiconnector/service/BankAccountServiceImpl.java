@@ -1,6 +1,5 @@
 package ma.formations.multiconnector.service;
 
-
 import lombok.AllArgsConstructor;
 import ma.formations.multiconnector.dao.BankAccountRepository;
 import ma.formations.multiconnector.dao.CustomerRepository;
@@ -30,16 +29,31 @@ public class BankAccountServiceImpl implements IBankAccountService {
 
     @Override
     public AddBankAccountResponse saveBankAccount(AddBankAccountRequest dto) {
+        // Configure ModelMapper to skip mapping for the customer field
+        modelMapper.typeMap(AddBankAccountRequest.class, BankAccount.class)
+                .addMappings(mapper -> mapper.skip(BankAccount::setCustomer));
+
+        // Map the rest of the fields from DTO to the entity
         BankAccount bankAccount = modelMapper.map(dto, BankAccount.class);
-        Customer customerP = customerRepository.findByIdentityRef(bankAccount.getCustomer().getIdentityRef()).orElseThrow(
-                () -> new BusinessException(String.format("No customer with the identity: %s exist", dto.getCustomerIdentityRef())));
+
+        // Manually retrieve and set the customer
+        Customer customer = customerRepository.findByIdentityRef(dto.getCustomerIdentityRef())
+                .orElseThrow(() -> new BusinessException(
+                        String.format("No customer with identity: %s exists", dto.getCustomerIdentityRef())
+                ));
+        bankAccount.setCustomer(customer);
+
+        // Set additional properties
         bankAccount.setAccountStatus(AccountStatus.OPENED);
-        bankAccount.setCustomer(customerP);
         bankAccount.setCreatedAt(new Date());
+
+        // Save and map the response
         AddBankAccountResponse response = modelMapper.map(bankAccountRepository.save(bankAccount), AddBankAccountResponse.class);
-        response.setMessage(String.format("RIB number [%s] for the customer [%s] has been successfully created", dto.getRib(), dto.getCustomerIdentityRef()));
+        response.setMessage(String.format("RIB [%s] for customer [%s] created successfully",
+                dto.getRib(), dto.getCustomerIdentityRef()));
         return response;
     }
+
 
     @Override
     public List<BankAccountDto> getAllBankAccounts() {

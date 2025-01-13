@@ -28,7 +28,6 @@ import java.util.List;
 public class BankServiceApplication {
 
     public static void main(String[] args) {
-
         SpringApplication.run(BankServiceApplication.class, args);
     }
 
@@ -41,7 +40,6 @@ public class BankServiceApplication {
     public GrpcAuthenticationReader grpcAuthenticationReader() {
         return new BasicGrpcAuthenticationReader();
     }
-
 
     @Bean
     CommandLineRunner initDataBase(ICustomerService customerService,

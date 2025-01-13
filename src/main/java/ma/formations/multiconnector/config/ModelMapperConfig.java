@@ -1,4 +1,5 @@
 package ma.formations.multiconnector.config;
+
 import lombok.AllArgsConstructor;
 import ma.formations.multiconnector.common.CommonTools;
 import ma.formations.multiconnector.service.exception.BusinessException;
@@ -20,16 +21,18 @@ public class ModelMapperConfig {
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().
-                setMatchingStrategy(MatchingStrategies.LOOSE).
+                setMatchingStrategy(MatchingStrategies.STRICT).
                 setFieldMatchingEnabled(true).
                 setSkipNullEnabled(true).
                 setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
+
         Converter<Date, String> dateToStringConverter = new AbstractConverter<>() {
             @Override
             public String convert(Date date) {
                 return tools.dateToString(date);
             }
         };
+
         Converter<String, Date> stringToDateConverter = new AbstractConverter<>() {
             @Override
             public Date convert(String s) {
@@ -40,8 +43,10 @@ public class ModelMapperConfig {
                 }
             }
         };
+
         modelMapper.addConverter(dateToStringConverter);
         modelMapper.addConverter(stringToDateConverter);
+
         return modelMapper;
     }
 }

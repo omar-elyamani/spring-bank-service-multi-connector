@@ -3,7 +3,6 @@ package ma.formations.multiconnector.common;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
