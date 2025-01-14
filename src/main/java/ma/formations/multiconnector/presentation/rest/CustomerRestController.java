@@ -19,7 +19,7 @@ public class CustomerRestController {
         this.customerService = customerService;
     }
     @GetMapping("/agent_guichet/all")
-    @PreAuthorize("hasAuthority('GET_ALL_CUSTUMERS')")
+    @PreAuthorize("hasAuthority('GET_ALL_CUSTOMERS')")
     List<CustomerDto> customers() {
         return customerService.getAllCustomers();
     }

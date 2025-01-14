@@ -13,10 +13,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/rest/bank")
-//@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @PreAuthorize("hasAnyRole('ADMIN','AGENT_GUICHET','CLIENT')")
 public class BankAccountRestController {
-
     private final IBankAccountService bankAccountService;
     public BankAccountRestController(IBankAccountService bankAccountService) {
         this.bankAccountService = bankAccountService;
