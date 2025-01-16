@@ -21,3 +21,4 @@ public class BankAccountDto {
     private AccountStatus accountStatus;
     private CustomerDto customer;
 }
+

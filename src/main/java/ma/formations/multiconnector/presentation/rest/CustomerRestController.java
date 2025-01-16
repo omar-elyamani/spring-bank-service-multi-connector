@@ -18,28 +18,32 @@ public class CustomerRestController {
     public CustomerRestController(ICustomerService customerService) {
         this.customerService = customerService;
     }
-    @GetMapping("/agent_guichet/all")
+    @GetMapping("/all")
     @PreAuthorize("hasAuthority('GET_ALL_CUSTOMERS')")
     List<CustomerDto> customers() {
         return customerService.getAllCustomers();
     }
+
     @GetMapping("/identity/{identity}")
     @PreAuthorize("hasAuthority('GET_CUSTOMER_BY_IDENTITY')")
     CustomerDto customerByIdentity(@PathVariable(value = "identity") String identity) {
         return customerService.getCustomByIdentity(identity);
     }
-    @PostMapping("/agent_guichet/create")
+
+    @PostMapping("/create")
     @PreAuthorize("hasAuthority('CREATE_CUSTOMER')")
     public ResponseEntity<AddCustomerResponse> createCustomer(@RequestBody @Valid AddCustomerRequest dto) {
         return new ResponseEntity<>(customerService.createCustomer(dto), HttpStatus.CREATED);
     }
-    @PutMapping("/agent_guichet/update/{identityRef}")
+
+    @PutMapping("/update/{identityRef}")
     @PreAuthorize("hasAuthority('UPDATE_CUSTOMER')")
     public ResponseEntity<UpdateCustomerResponse> updateCustomer(@PathVariable String identityRef, @RequestBody
     @Valid UpdateCustomerRequest dto) {
         return new ResponseEntity<>(customerService.updateCustomer(identityRef, dto), HttpStatus.OK);
     }
-    @DeleteMapping("/agent_guichet/delete/{identityRef}")
+
+    @DeleteMapping("/delete/{identityRef}")
     @PreAuthorize("hasAuthority('DELETE_CUSTOMER')")
     public ResponseEntity<String> deleteCustomer(@PathVariable String identityRef) {
         customerService.deleteCustomerByIdentityRef(identityRef);

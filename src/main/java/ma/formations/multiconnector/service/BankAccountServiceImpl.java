@@ -6,6 +6,7 @@ import ma.formations.multiconnector.dao.CustomerRepository;
 import ma.formations.multiconnector.dtos.bankaccount.AddBankAccountRequest;
 import ma.formations.multiconnector.dtos.bankaccount.AddBankAccountResponse;
 import ma.formations.multiconnector.dtos.bankaccount.BankAccountDto;
+import ma.formations.multiconnector.dtos.customer.CustomerDto;
 import ma.formations.multiconnector.enums.AccountStatus;
 import ma.formations.multiconnector.service.exception.BusinessException;
 import ma.formations.multiconnector.service.model.BankAccount;
@@ -55,12 +56,40 @@ public class BankAccountServiceImpl implements IBankAccountService {
     }
 
 
-    @Override
+    /*@Override
     public List<BankAccountDto> getAllBankAccounts() {
         return bankAccountRepository.findAll().stream().
                 map(bankAccount -> modelMapper.map(bankAccount, BankAccountDto.class)).
                 collect(Collectors.toList());
+    }*/
+
+    @Override
+    public List<BankAccountDto> getAllBankAccounts() {
+        // Fetch all bank accounts
+        return bankAccountRepository.findAll().stream()
+                .map(bankAccount -> {
+                    // Map BankAccount to BankAccountDto
+                    BankAccountDto bankAccountDto = modelMapper.map(bankAccount, BankAccountDto.class);
+
+                    // Set CustomerDto manually
+                    Customer customer = bankAccount.getCustomer();
+                    if (customer != null) {
+                        bankAccountDto.setCustomer(
+                                CustomerDto.builder()
+                                        .id(customer.getId())
+                                        .username(customer.getUsername())
+                                        .identityRef(customer.getIdentityRef())
+                                        .firstname(customer.getFirstname())
+                                        .lastname(customer.getLastname())
+                                        .build()
+                        );
+                    }
+
+                    return bankAccountDto;
+                })
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public BankAccountDto getBankAccountByRib(String rib) {

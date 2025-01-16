@@ -17,19 +17,23 @@ import java.util.List;
 @PreAuthorize("hasAnyRole('ADMIN','AGENT_GUICHET','CLIENT')")
 public class BankAccountRestController {
     private final IBankAccountService bankAccountService;
+
     public BankAccountRestController(IBankAccountService bankAccountService) {
         this.bankAccountService = bankAccountService;
     }
+
     @GetMapping("/all")
     @PreAuthorize("hasAuthority('GET_ALL_BANK_ACCOUNT')")
     List<BankAccountDto> bankAccounts() {
         return bankAccountService.getAllBankAccounts();
     }
-    @GetMapping
+
+    @GetMapping("/account")
     @PreAuthorize("hasAuthority('GET_BANK_ACCOUNT_BY_RIB')")
     BankAccountDto bankAccountByRib(@RequestParam(value = "rib") String rib) {
         return bankAccountService.getBankAccountByRib(rib);
     }
+
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('CREATE_BANK_ACCOUNT')")
     public ResponseEntity<AddBankAccountResponse> addBankAccount(@Valid @RequestBody AddBankAccountRequest dto) {

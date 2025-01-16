@@ -25,11 +25,10 @@ public class TransactionRestController {
     private CommonTools commonTools;
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('ADD_WIRED_TRANSFER')")
-    public ResponseEntity<AddWirerTransferResponse> addWirerTransfer(@Valid @RequestBody
-                                                                     AddWirerTransferRequest dto) {
+    public ResponseEntity<AddWirerTransferResponse> addWirerTransfer(@Valid @RequestBody AddWirerTransferRequest dto) {
         return new ResponseEntity<>(transactionService.wiredTransfer(dto), HttpStatus.CREATED);
     }
-    @GetMapping
+    @GetMapping("/all")
     @PreAuthorize("hasAuthority('GET_TRANSACTIONS')")
     public List<TransactionDto> getTransactions(GetTransactionListRequest dto) {
         return transactionService.getTransactions(dto);
