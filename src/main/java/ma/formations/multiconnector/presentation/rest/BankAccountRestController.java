@@ -36,7 +36,14 @@ public class BankAccountRestController {
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('CREATE_BANK_ACCOUNT')")
-    public ResponseEntity<AddBankAccountResponse> addBankAccount(@Valid @RequestBody AddBankAccountRequest dto) {
+    ResponseEntity<AddBankAccountResponse> addBankAccount(@Valid @RequestBody AddBankAccountRequest dto) {
         return new ResponseEntity<>(bankAccountService.saveBankAccount(dto), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/delete/{rib}")
+    @PreAuthorize("hasAuthority('DELETE_BANK_ACCOUNT')")
+    public ResponseEntity<String> deleteBankAccount(@PathVariable String rib) {
+        String message = bankAccountService.deleteBankAccountByRib(rib);
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }

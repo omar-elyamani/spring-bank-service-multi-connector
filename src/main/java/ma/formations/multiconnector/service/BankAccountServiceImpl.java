@@ -14,7 +14,6 @@ import ma.formations.multiconnector.service.model.Customer;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +25,6 @@ public class BankAccountServiceImpl implements IBankAccountService {
     private final BankAccountRepository bankAccountRepository;
     private final CustomerRepository customerRepository;
     private ModelMapper modelMapper;
-
 
     @Override
     public AddBankAccountResponse saveBankAccount(AddBankAccountRequest dto) {
@@ -55,45 +53,49 @@ public class BankAccountServiceImpl implements IBankAccountService {
         return response;
     }
 
-
-    /*@Override
-    public List<BankAccountDto> getAllBankAccounts() {
-        return bankAccountRepository.findAll().stream().
-                map(bankAccount -> modelMapper.map(bankAccount, BankAccountDto.class)).
-                collect(Collectors.toList());
-    }*/
-
     @Override
     public List<BankAccountDto> getAllBankAccounts() {
         // Fetch all bank accounts
         return bankAccountRepository.findAll().stream()
-                .map(bankAccount -> {
-                    // Map BankAccount to BankAccountDto
-                    BankAccountDto bankAccountDto = modelMapper.map(bankAccount, BankAccountDto.class);
+            .map(bankAccount -> {
+                // Map BankAccount to BankAccountDto
+                BankAccountDto bankAccountDto = modelMapper.map(bankAccount, BankAccountDto.class);
 
-                    // Set CustomerDto manually
-                    Customer customer = bankAccount.getCustomer();
-                    if (customer != null) {
-                        bankAccountDto.setCustomer(
-                                CustomerDto.builder()
-                                        .id(customer.getId())
-                                        .username(customer.getUsername())
-                                        .identityRef(customer.getIdentityRef())
-                                        .firstname(customer.getFirstname())
-                                        .lastname(customer.getLastname())
-                                        .build()
-                        );
-                    }
+                // Set CustomerDto manually
+                Customer customer = bankAccount.getCustomer();
+                if (customer != null) {
+                    bankAccountDto.setCustomer(
+                        CustomerDto.builder()
+                        .id(customer.getId())
+                        .username(customer.getUsername())
+                        .identityRef(customer.getIdentityRef())
+                        .firstname(customer.getFirstname())
+                        .lastname(customer.getLastname())
+                        .build()
+                    );
+                }
 
-                    return bankAccountDto;
-                })
-                .collect(Collectors.toList());
+                return bankAccountDto;
+            }).collect(Collectors.toList());
     }
-
 
     @Override
     public BankAccountDto getBankAccountByRib(String rib) {
         return modelMapper.map(bankAccountRepository.findByRib(rib).orElseThrow(
                 () -> new BusinessException(String.format("No Bank Account with rib [%s] exist", rib))), BankAccountDto.class);
+    }
+
+    @Override
+    public String deleteBankAccountByRib(String rib) {
+        if (rib == null || rib.isEmpty()) {
+            throw new BusinessException("Enter a valid RIB");
+        }
+
+        BankAccount bankAccount = bankAccountRepository.findByRib(rib).orElseThrow(
+                () -> new BusinessException(String.format("No Bank Account with RIB [%s] exists", rib))
+        );
+
+        bankAccountRepository.delete(bankAccount);
+        return String.format("Bank Account with RIB [%s] has been deleted successfully", rib);
     }
 }

@@ -10,4 +10,5 @@ public interface IBankAccountService {
     AddBankAccountResponse saveBankAccount(AddBankAccountRequest dto);
     List<BankAccountDto> getAllBankAccounts();
     BankAccountDto getBankAccountByRib(String rib);
+    String deleteBankAccountByRib(String rib);
 }

@@ -26,6 +26,7 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private IUserService userService;
+
     @PostMapping("/signin")
     public ResponseEntity<TokenVo> authenticateUser(@RequestBody UserRequest userRequest) {
         try {
@@ -45,6 +46,7 @@ public class AuthenticationController {
             throw new BusinessException("Login ou mot de passe incorrect");
         }
     }
+
     @PostMapping("/signup")
     public ResponseEntity<String> createUser(@RequestBody CreateUserRequest createUserRequest) {
         userService.save(UserVo.builder().

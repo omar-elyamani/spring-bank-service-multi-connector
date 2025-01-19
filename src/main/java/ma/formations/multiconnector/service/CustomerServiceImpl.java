@@ -80,6 +80,5 @@ public class CustomerServiceImpl implements ICustomerService {
         );
         customerRepository.delete(customerFound);
         return String.format("Customer with identity %s is deleted with success", identityRef);
-
     }
 }
