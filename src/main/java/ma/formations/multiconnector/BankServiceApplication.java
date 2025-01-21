@@ -173,9 +173,29 @@ public class BankServiceApplication {
                             userService.getPermissionByName(Permissions.GET_TRANSACTIONS.name())))
                     .build();
 
+            RoleVo roleAdmin = RoleVo.builder()
+                    .authority(Roles.ROLE_ADMIN.name())
+                    .authorities(List.of(
+                            userService.getPermissionByName(Permissions.GET_ALL_CUSTOMERS.name()),
+                            userService.getPermissionByName(Permissions.GET_CUSTOMER_BY_IDENTITY.name()),
+                            userService.getPermissionByName(Permissions.CREATE_CUSTOMER.name()),
+                            userService.getPermissionByName(Permissions.UPDATE_CUSTOMER.name()),
+                            userService.getPermissionByName(Permissions.DELETE_CUSTOMER.name()),
+                            userService.getPermissionByName(Permissions.GET_ALL_BANK_ACCOUNT.name()),
+                            userService.getPermissionByName(Permissions.GET_BANK_ACCOUNT_BY_RIB.name()),
+                            userService.getPermissionByName(Permissions.CREATE_BANK_ACCOUNT.name()),
+                            userService.getPermissionByName(Permissions.DELETE_BANK_ACCOUNT.name()),
+                            userService.getPermissionByName(Permissions.GET_CUSTOMER_BY_IDENTITY.name()),
+                            userService.getPermissionByName(Permissions.GET_CUSTOMER_BANK_ACCOUNTS.name()),
+                            userService.getPermissionByName(Permissions.GET_BANK_ACCOUNT_BY_RIB.name()),
+                            userService.getPermissionByName(Permissions.ADD_WIRED_TRANSFER.name()),
+                            userService.getPermissionByName(Permissions.GET_TRANSACTIONS.name())))
+                    .build();
+
             userService.save(roleAgentGuichet);
             userService.save(roleAgentGuichetGet);
             userService.save(roleClient);
+            userService.save(roleAdmin);
 
             // Create users
             userService.save(UserVo.builder()
@@ -211,7 +231,7 @@ public class BankServiceApplication {
             userService.save(UserVo.builder()
                     .username("admin")
                     .password("admin")
-                    .authorities(List.of(roleAgentGuichet, roleClient))
+                    .authorities(List.of(roleAdmin))
                     .accountNonExpired(true)
                     .accountNonLocked(true)
                     .credentialsNonExpired(true)
