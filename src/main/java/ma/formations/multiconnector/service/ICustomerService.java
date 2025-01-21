@@ -1,5 +1,6 @@
 package ma.formations.multiconnector.service;
 
+import ma.formations.multiconnector.dtos.bankaccount.BankAccountDto;
 import ma.formations.multiconnector.dtos.customer.*;
 
 import java.util.List;
@@ -10,4 +11,5 @@ public interface ICustomerService {
     UpdateCustomerResponse updateCustomer(String identityRef, UpdateCustomerRequest updateCustomerRequest);
     CustomerDto getCustomByIdentity(String identity);
     String deleteCustomerByIdentityRef(String identityRef);
+    List<BankAccountDto> getCustomerBankAccounts(String username);
 }

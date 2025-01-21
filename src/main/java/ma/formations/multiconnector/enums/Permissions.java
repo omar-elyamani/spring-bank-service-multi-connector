@@ -3,6 +3,7 @@ package ma.formations.multiconnector.enums;
 public enum Permissions {
     GET_ALL_CUSTOMERS,
     GET_CUSTOMER_BY_IDENTITY,
+    GET_CUSTOMER_BANK_ACCOUNTS,
     CREATE_CUSTOMER,
     UPDATE_CUSTOMER,
     DELETE_CUSTOMER,

@@ -1,6 +1,7 @@
 package ma.formations.multiconnector.presentation.rest;
 
 import jakarta.validation.Valid;
+import ma.formations.multiconnector.dtos.bankaccount.BankAccountDto;
 import ma.formations.multiconnector.dtos.customer.*;
 import ma.formations.multiconnector.service.ICustomerService;
 import org.springframework.http.HttpStatus;
@@ -48,5 +49,12 @@ public class CustomerRestController {
     public ResponseEntity<String> deleteCustomer(@PathVariable String identityRef) {
         customerService.deleteCustomerByIdentityRef(identityRef);
         return new ResponseEntity<>(String.format("Customer with identity %s is removed", identityRef), HttpStatus.OK);
+    }
+
+    @GetMapping("/bank-accounts/{username}")
+    @PreAuthorize("hasAuthority('GET_CUSTOMER_BANK_ACCOUNTS')")
+    public ResponseEntity<List<BankAccountDto>> getCustomerBankAccounts(@PathVariable String username) {
+        List<BankAccountDto> bankAccounts = customerService.getCustomerBankAccounts(username);
+        return new ResponseEntity<>(bankAccounts, HttpStatus.OK);
     }
 }

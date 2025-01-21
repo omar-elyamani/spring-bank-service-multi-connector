@@ -167,6 +167,7 @@ public class BankServiceApplication {
                     .authority(Roles.ROLE_CLIENT.name())
                     .authorities(List.of(
                             userService.getPermissionByName(Permissions.GET_CUSTOMER_BY_IDENTITY.name()),
+                            userService.getPermissionByName(Permissions.GET_CUSTOMER_BANK_ACCOUNTS.name()),
                             userService.getPermissionByName(Permissions.GET_BANK_ACCOUNT_BY_RIB.name()),
                             userService.getPermissionByName(Permissions.ADD_WIRED_TRANSFER.name()),
                             userService.getPermissionByName(Permissions.GET_TRANSACTIONS.name())))

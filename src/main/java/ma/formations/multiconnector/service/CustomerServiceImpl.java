@@ -1,14 +1,15 @@
 package ma.formations.multiconnector.service;
 
 import lombok.AllArgsConstructor;
+import ma.formations.multiconnector.dao.UserRepository;
 import ma.formations.multiconnector.dao.CustomerRepository;
+import ma.formations.multiconnector.dtos.bankaccount.BankAccountDto;
 import ma.formations.multiconnector.dtos.customer.*;
 import ma.formations.multiconnector.service.exception.BusinessException;
 import ma.formations.multiconnector.service.model.Customer;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class CustomerServiceImpl implements ICustomerService {
 
     private final CustomerRepository customerRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -80,5 +82,29 @@ public class CustomerServiceImpl implements ICustomerService {
         );
         customerRepository.delete(customerFound);
         return String.format("Customer with identity %s is deleted with success", identityRef);
+    }
+
+    @Override
+    public List<BankAccountDto> getCustomerBankAccounts(String username) {
+        if (username == null || username.isEmpty()) {
+            throw new BusinessException("Enter a valid username.");
+        }
+
+        // Retrieve the customer by username
+        Customer customer = userRepository.findByUsername(username)
+                .filter(user -> user instanceof Customer)
+                .map(user -> (Customer) user)
+                .orElseThrow(() -> new BusinessException(
+                        String.format("No customer with username [%s] exists!", username)));
+
+        // Check if the customer has associated bank accounts
+        if (customer.getBankAccounts() == null || customer.getBankAccounts().isEmpty()) {
+            throw new BusinessException(String.format("No bank accounts found for customer with username [%s]!", username));
+        }
+
+        // Map the bank accounts to DTOs and return
+        return customer.getBankAccounts().stream()
+                .map(bankAccount -> modelMapper.map(bankAccount, BankAccountDto.class))
+                .collect(Collectors.toList());
     }
 }
